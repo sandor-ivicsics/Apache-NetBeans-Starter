@@ -21,7 +21,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         if netbeansJDKHome == nil {
             netbeansJDKHome = getInstalledJDKHome(installedJDK: selectInstalledJDK())
             if netbeansJDKHome == nil {
-                return
+                netbeansJDKHome = selectJDKHome()?.path
+                if netbeansJDKHome == nil {
+                    return
+                }
             }
             userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdk_home")
         }
@@ -95,6 +98,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
+    func selectDirectory(title: String) -> URL? {
+        let openPanel = NSOpenPanel()
+        openPanel.allowsMultipleSelection = false
+        openPanel.canChooseDirectories = true
+        openPanel.canChooseFiles = false
+        openPanel.title = title
+        if (openPanel.runModal() != .OK) {
+            return nil
+        }
+        return openPanel.urls.first
+    }
+    
+    func selectJDKHome() -> URL? {
+        return selectDirectory(title: "Please, select JDK home directory!")
+    }
+    
     func getNetBeansShellScript(netbeansHome: URL?) -> String? {
         guard let netbeansHome = netbeansHome else {
             return nil
@@ -111,15 +130,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func selectNetBeansHome() -> URL? {
-        let openPanel = NSOpenPanel()
-        openPanel.allowsMultipleSelection = false
-        openPanel.canChooseDirectories = true
-        openPanel.canChooseFiles = false
-        openPanel.title = "Please, select Apache NetBeans home directory!"
-        if (openPanel.runModal() != .OK) {
-            return nil
-        }
-        return openPanel.urls.first
+        return selectDirectory(title: "Please, select Apache NetBeans home directory!")
     }
     
     func alert(alertStyle: NSAlert.Style,messageText: String, informativeText: String) {
