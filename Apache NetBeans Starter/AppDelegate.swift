@@ -18,10 +18,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         let userDefaults = UserDefaults.standard
         var environment = ProcessInfo.processInfo.environment
-        if environment.keys.contains("netbeans_jdk_home") {
-            print("netbeansJDKHome from environment: \(environment["netbeans_jdk_home"] as Optional)")
+        if environment.keys.contains("netbeans_jdkhome") {
+            print("netbeansJDKHome from environment: \(environment["netbeans_jdkhome"] as Optional)")
         } else {
-            var netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdk_home")
+            var netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
             if netbeansJDKHome == nil {
                 // TODO
                 //netbeansJDKHome = getInstalledJDKHome(installedJDK: selectInstalledJDK())
@@ -29,10 +29,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 if netbeansJDKHome == nil {
                     return
                 }
-                userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdk_home")
+                userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdkhome")
             }
             print("netbeansJDKHome: \(netbeansJDKHome as Optional)")
-            environment["netbeans_jdk_home"] = netbeansJDKHome
+            environment["netbeans_jdkhome"] = netbeansJDKHome
         }
         var netbeansShellScript = getNetBeansShellScript(netbeansHome: userDefaults.url(forKey: "netbeans_home"))
         if netbeansShellScript == nil {
