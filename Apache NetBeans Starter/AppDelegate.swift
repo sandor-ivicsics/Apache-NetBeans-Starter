@@ -18,11 +18,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         // Insert code here to initialize your application
         let userDefaults = UserDefaults.standard
         var environment = ProcessInfo.processInfo.environment
-        if environment.keys.contains("netbeans_jdkhome") {
+        var netbeansJDKHome = environment["netbeans_jdkhome"]
+        if isValidJDKHome(jdkHome: netbeansJDKHome) {
             print("netbeansJDKHome from environment: \(environment["netbeans_jdkhome"] as Optional)")
         } else {
-            var netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
-            if netbeansJDKHome == nil {
+            netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
+            if !isValidJDKHome(jdkHome: netbeansJDKHome) {
                 // TODO
                 //netbeansJDKHome = getInstalledJDKHome(installedJDK: selectInstalledJDK())
                 netbeansJDKHome = selectJDKHome()?.path
@@ -111,8 +112,31 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return openPanel.urls.first
     }
     
+    func isValidJDKHome(jdkHomeURL: URL) -> Bool {
+        let java = jdkHomeURL
+            .appendingPathComponent("jre")
+            .appendingPathComponent("bin")
+            .appendingPathComponent("java")
+            .path
+        let fileManager = FileManager.default
+        return fileManager.fileExists(atPath: java)
+    }
+    
+    func isValidJDKHome(jdkHome: String?) -> Bool {
+        guard let jdkHome = jdkHome else {
+            return false
+        }
+        return isValidJDKHome(jdkHomeURL: URL(fileURLWithPath: jdkHome))
+    }
+    
     func selectJDKHome() -> URL? {
-        return selectDirectory(title: "Please, select JDK home directory!", initialDirectory: "/Library/Java/JavaVirtualMachines")
+        guard let jdkHome = selectDirectory(title: "Please, select JDK home directory!", initialDirectory: "/Library/Java/JavaVirtualMachines") else {
+            return nil
+        }
+        if isValidJDKHome(jdkHomeURL: jdkHome) {
+            return jdkHome
+        }
+        return nil
     }
     
     func getNetBeansShellScript(netbeansHome: URL?) -> String? {
