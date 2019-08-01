@@ -17,18 +17,23 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
         let userDefaults = UserDefaults.standard
-        var netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdk_home")
-        if netbeansJDKHome == nil {
-            netbeansJDKHome = getInstalledJDKHome(installedJDK: selectInstalledJDK())
+        var environment = ProcessInfo.processInfo.environment
+        if environment.keys.contains("netbeans_jdk_home") {
+            print("netbeansJDKHome from environment: \(environment["netbeans_jdk_home"] as Optional)")
+        } else {
+            var netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdk_home")
             if netbeansJDKHome == nil {
+                // TODO
+                //netbeansJDKHome = getInstalledJDKHome(installedJDK: selectInstalledJDK())
                 netbeansJDKHome = selectJDKHome()?.path
                 if netbeansJDKHome == nil {
                     return
                 }
+                userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdk_home")
             }
-            userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdk_home")
+            print("netbeansJDKHome: \(netbeansJDKHome as Optional)")
+            environment["netbeans_jdk_home"] = netbeansJDKHome
         }
-        print("netbeansJDKHome: \(netbeansJDKHome ?? "")")
         var netbeansShellScript = getNetBeansShellScript(netbeansHome: userDefaults.url(forKey: "netbeans_home"))
         if netbeansShellScript == nil {
             let netbeansHome = selectNetBeansHome()
@@ -38,19 +43,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
             userDefaults.set(netbeansHome, forKey: "netbeans_home")
         }
-        print("netbeansShellScript: \(netbeansShellScript ?? "")")
-        let environment = ProcessInfo.processInfo.environment
-        guard let home = environment["HOME"] else {
-            return
-        }
+        print("netbeansShellScript: \(netbeansShellScript as Optional)")
+        let process = Process()
+        process.environment = environment
         guard let shell = environment["SHELL"] else {
             return
         }
-        let process = Process()
-        process.environment = [
-            "HOME" : home,
-            "netbeans_jdkhome" : netbeansJDKHome!
-        ]
         process.executableURL = URL(fileURLWithPath: shell)
         process.arguments = [netbeansShellScript!]
         do {
@@ -98,12 +96,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     
-    func selectDirectory(title: String) -> URL? {
+    func selectDirectory(title: String, initialDirectory: String?) -> URL? {
         let openPanel = NSOpenPanel()
         openPanel.allowsMultipleSelection = false
         openPanel.canChooseDirectories = true
         openPanel.canChooseFiles = false
         openPanel.title = title
+        if initialDirectory != nil {
+            openPanel.directoryURL = URL(fileURLWithPath: initialDirectory!)
+        }
         if (openPanel.runModal() != .OK) {
             return nil
         }
@@ -111,7 +112,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func selectJDKHome() -> URL? {
-        return selectDirectory(title: "Please, select JDK home directory!")
+        return selectDirectory(title: "Please, select JDK home directory!", initialDirectory: "/Library/Java/JavaVirtualMachines")
     }
     
     func getNetBeansShellScript(netbeansHome: URL?) -> String? {
@@ -130,7 +131,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func selectNetBeansHome() -> URL? {
-        return selectDirectory(title: "Please, select Apache NetBeans home directory!")
+        return selectDirectory(title: "Please, select Apache NetBeans home directory!", initialDirectory: nil)
     }
     
     func alert(alertStyle: NSAlert.Style,messageText: String, informativeText: String) {
