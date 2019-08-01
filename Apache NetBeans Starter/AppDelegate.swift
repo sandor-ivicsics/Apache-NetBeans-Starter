@@ -26,8 +26,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             if !isValidJDKHome(jdkHome: netbeansJDKHome) {
                 // TODO
                 //netbeansJDKHome = getInstalledJDKHome(installedJDK: selectInstalledJDK())
-                netbeansJDKHome = selectJDKHome()?.path
-                if netbeansJDKHome == nil {
+                netbeansJDKHome = selectJDKHome()
+                if !isValidJDKHome(jdkHome: netbeansJDKHome) {
+                    alert(alertStyle: .critical, messageText: "Invalid JDK home directory!", informativeText: "Invalid JDK home directory!")
                     return
                 }
                 userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdkhome")
@@ -40,6 +41,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             let netbeansHome = selectNetBeansHome()
             netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome)
             if netbeansShellScript == nil {
+                alert(alertStyle: .critical, messageText: "Invalid Apache NetBeans home directory!", informativeText: "Invalid Apache NetBeans home directory!")
                 return
             }
             userDefaults.set(netbeansHome, forKey: "netbeans_home")
@@ -112,31 +114,28 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return openPanel.urls.first
     }
     
-    func isValidJDKHome(jdkHomeURL: URL) -> Bool {
-        let java = jdkHomeURL
-            .appendingPathComponent("jre")
-            .appendingPathComponent("bin")
-            .appendingPathComponent("java")
-            .path
-        let fileManager = FileManager.default
-        return fileManager.fileExists(atPath: java)
-    }
-    
     func isValidJDKHome(jdkHome: String?) -> Bool {
         guard let jdkHome = jdkHome else {
             return false
         }
-        return isValidJDKHome(jdkHomeURL: URL(fileURLWithPath: jdkHome))
+        /*let java = URL(fileURLWithPath: jdkHome)
+            .appendingPathComponent("jre")
+            .appendingPathComponent("bin")
+            .appendingPathComponent("java")
+            .path*/
+        let javac = URL(fileURLWithPath: jdkHome)
+            .appendingPathComponent("bin")
+            .appendingPathComponent("javac")
+            .path
+        let fileManager = FileManager.default
+        return fileManager.fileExists(atPath: javac)
     }
     
-    func selectJDKHome() -> URL? {
+    func selectJDKHome() -> String? {
         guard let jdkHome = selectDirectory(title: "Please, select JDK home directory!", initialDirectory: "/Library/Java/JavaVirtualMachines") else {
             return nil
         }
-        if isValidJDKHome(jdkHomeURL: jdkHome) {
-            return jdkHome
-        }
-        return nil
+        return jdkHome.path
     }
     
     func getNetBeansShellScript(netbeansHome: URL?) -> String? {
