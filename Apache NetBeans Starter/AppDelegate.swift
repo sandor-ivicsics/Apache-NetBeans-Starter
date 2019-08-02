@@ -12,57 +12,50 @@ import Cocoa
 class AppDelegate: NSObject, NSApplicationDelegate {
     
     @IBOutlet weak var window: NSWindow!
-
+    @IBOutlet weak var textFieldNetBeansJDKHome: NSTextField!
+    @IBOutlet weak var textFieldNetBeansHome: NSTextField!
+    @IBAction func browseForNetBeansJDKHome(_ sender: Any) {
+        if let jdkHome = selectJDKHome() {
+            if isValidJDKHome(jdkHome: jdkHome) {
+                textFieldNetBeansJDKHome.stringValue = jdkHome
+            } else {
+                alert(alertStyle: .critical, messageText: "Invalid JDK home directory!", informativeText: "Invalid JDK home directory!")
+            }
+        }
+    }
+    @IBAction func browseForNetBeansHome(_ sender: Any) {
+        if let netbeansHome = selectNetBeansHome() {
+            if isValidNetBeansHome(netbeansHome: netbeansHome) {
+                textFieldNetBeansHome.stringValue = netbeansHome.path
+            } else {
+                alert(alertStyle: .critical, messageText: "Invalid Apache NetBeans home directory!", informativeText: "Invalid Apache NetBeans home directory!")
+            }
+        }
+    }
+    @IBAction func startNetBeans(_ sender: Any) {
+        let userDefaults = UserDefaults.standard
+        userDefaults.set(textFieldNetBeansJDKHome.stringValue, forKey: "netbeans_jdkhome")
+        userDefaults.set(URL(fileURLWithPath: textFieldNetBeansHome.stringValue), forKey: "netbeans_home")
+        if startNetBeans() {
+            NSApplication.shared.terminate(self)
+        } else {
+            alert(alertStyle: .critical, messageText: "Failed to start Apache NetBeans!", informativeText: "Failed to start Apache NetBeans!")
+        }
+    }
+    
 
     func applicationDidFinishLaunching(_ aNotification: Notification) {
         // Insert code here to initialize your application
-        let userDefaults = UserDefaults.standard
-        var environment = ProcessInfo.processInfo.environment
-        var netbeansJDKHome = environment["netbeans_jdkhome"]
-        if isValidJDKHome(jdkHome: netbeansJDKHome) {
-            print("netbeansJDKHome from environment: \(environment["netbeans_jdkhome"] as Optional)")
-        } else {
-            netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
-            if !isValidJDKHome(jdkHome: netbeansJDKHome) {
-                // TODO
-                //netbeansJDKHome = getInstalledJDKHome(installedJDK: selectInstalledJDK())
-                netbeansJDKHome = selectJDKHome()
-                if !isValidJDKHome(jdkHome: netbeansJDKHome) {
-                    alert(alertStyle: .critical, messageText: "Invalid JDK home directory!", informativeText: "Invalid JDK home directory!")
-                    window.setIsVisible(true)
-                    return
-                }
-                userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdkhome")
-            }
-            print("netbeansJDKHome: \(netbeansJDKHome as Optional)")
-            environment["netbeans_jdkhome"] = netbeansJDKHome
-        }
-        var netbeansHome = userDefaults.url(forKey: "netbeans_home")
-        var netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome)
-        if netbeansShellScript == nil {
-            netbeansHome = selectNetBeansHome()
-            netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome)
-            if netbeansShellScript == nil {
-                alert(alertStyle: .critical, messageText: "Invalid Apache NetBeans home directory!", informativeText: "Invalid Apache NetBeans home directory!")
-                window.setIsVisible(true)
-                return
-            }
-            userDefaults.set(netbeansHome, forKey: "netbeans_home")
-        }
-        print("netbeansShellScript: \(netbeansShellScript as Optional)")
-        let process = Process()
-        process.environment = environment
-        guard let shell = environment["SHELL"] else {
+        if startNetBeans() {
+            NSApplication.shared.terminate(self)
             return
         }
-        process.executableURL = URL(fileURLWithPath: shell)
-        process.arguments = [netbeansShellScript!]
-        do {
-            try process.run()
-            NSApplication.shared.terminate(self)
-        } catch {
-            print("Unexpected error: \(error).")
-        }
+        let userDefaults = UserDefaults.standard
+        let netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
+        textFieldNetBeansJDKHome.stringValue = netbeansJDKHome ?? "<not set>"
+        let netbeansHome = userDefaults.url(forKey: "netbeans_home")
+        textFieldNetBeansHome.stringValue = netbeansHome?.path ?? "<not set>"
+        window.setIsVisible(true)
     }
 
     func applicationWillTerminate(_ aNotification: Notification) {
@@ -121,15 +114,12 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return openPanel.urls.first
     }
     
-    func isValidJDKHome(jdkHome: String?) -> Bool {
-        guard let jdkHome = jdkHome else {
-            return false
-        }
+    func isValidJDKHome(jdkHome: String) -> Bool {
         /*let java = URL(fileURLWithPath: jdkHome)
-            .appendingPathComponent("jre")
-            .appendingPathComponent("bin")
-            .appendingPathComponent("java")
-            .path*/
+         .appendingPathComponent("jre")
+         .appendingPathComponent("bin")
+         .appendingPathComponent("java")
+         .path*/
         let javac = URL(fileURLWithPath: jdkHome)
             .appendingPathComponent("bin")
             .appendingPathComponent("javac")
@@ -138,11 +128,27 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return fileManager.fileExists(atPath: javac)
     }
     
+    func isValidJDKHome(jdkHome: String?) -> Bool {
+        guard let jdkHome = jdkHome else {
+            return false
+        }
+        return isValidJDKHome(jdkHome: jdkHome)
+    }
+    
     func selectJDKHome() -> String? {
         guard let jdkHome = selectDirectory(title: "Please, select JDK home directory!", initialDirectory: "/Library/Java/JavaVirtualMachines") else {
             return nil
         }
         return jdkHome.path
+    }
+    
+    func isValidNetBeansHome(netbeansHome: URL) -> Bool {
+        let netbeansShellScript = netbeansHome
+            .appendingPathComponent("bin")
+            .appendingPathComponent("netbeans")
+            .path
+        let fileManager = FileManager.default
+        return fileManager.fileExists(atPath: netbeansShellScript)
     }
     
     func getNetBeansShellScript(netbeansHome: URL?) -> String? {
@@ -171,6 +177,37 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         alert.informativeText = informativeText
         alert.addButton(withTitle: "OK")
         alert.runModal()
+    }
+    
+    func startNetBeans() -> Bool {
+        let userDefaults = UserDefaults.standard
+        var environment = ProcessInfo.processInfo.environment
+        var netbeansJDKHome = environment["netbeans_jdkhome"]
+        if isValidJDKHome(jdkHome: netbeansJDKHome) {
+            print("netbeansJDKHome from environment: \(environment["netbeans_jdkhome"] as Optional)")
+        } else {
+            netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
+            if isValidJDKHome(jdkHome: netbeansJDKHome) {
+                let netbeansHome = userDefaults.url(forKey: "netbeans_home")
+                guard let netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome) else {
+                    return false
+                }
+                let process = Process()
+                process.environment = environment
+                guard let shell = environment["SHELL"] else {
+                    return false
+                }
+                process.executableURL = URL(fileURLWithPath: shell)
+                process.arguments = [netbeansShellScript]
+                do {
+                    try process.run()
+                    return true
+                } catch {
+                    print("Unexpected error: \(error).")
+                }
+            }
+        }
+        return false
     }
 
 }
