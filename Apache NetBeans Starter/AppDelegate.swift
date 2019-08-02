@@ -29,6 +29,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                 netbeansJDKHome = selectJDKHome()
                 if !isValidJDKHome(jdkHome: netbeansJDKHome) {
                     alert(alertStyle: .critical, messageText: "Invalid JDK home directory!", informativeText: "Invalid JDK home directory!")
+                    window.setIsVisible(true)
                     return
                 }
                 userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdkhome")
@@ -36,12 +37,14 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             print("netbeansJDKHome: \(netbeansJDKHome as Optional)")
             environment["netbeans_jdkhome"] = netbeansJDKHome
         }
-        var netbeansShellScript = getNetBeansShellScript(netbeansHome: userDefaults.url(forKey: "netbeans_home"))
+        var netbeansHome = userDefaults.url(forKey: "netbeans_home")
+        var netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome)
         if netbeansShellScript == nil {
-            let netbeansHome = selectNetBeansHome()
+            netbeansHome = selectNetBeansHome()
             netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome)
             if netbeansShellScript == nil {
                 alert(alertStyle: .critical, messageText: "Invalid Apache NetBeans home directory!", informativeText: "Invalid Apache NetBeans home directory!")
+                window.setIsVisible(true)
                 return
             }
             userDefaults.set(netbeansHome, forKey: "netbeans_home")
@@ -64,6 +67,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
 
     func applicationWillTerminate(_ aNotification: Notification) {
         // Insert code here to tear down your application
+    }
+    
+    func applicationShouldTerminateAfterLastWindowClosed(_ sender: NSApplication) -> Bool {
+        return true
     }
     
     func getInstalledJDKHome(installedJDK: URL?) -> String? {
