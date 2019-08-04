@@ -13,7 +13,10 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     @IBOutlet weak var window: NSWindow!
     @IBOutlet weak var textFieldNetBeansJDKHome: NSTextField!
+    @IBOutlet weak var buttonBrowseForNetBeansJDKHome: NSButton!
     @IBOutlet weak var textFieldNetBeansHome: NSTextField!
+    @IBOutlet weak var buttonBrowseForNetBeansHome: NSButton!
+    
     @IBAction func browseForNetBeansJDKHome(_ sender: Any) {
         if let jdkHome = selectJDKHome() {
             if isValidJDKHome(jdkHome: jdkHome) {
@@ -23,6 +26,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
+    
     @IBAction func browseForNetBeansHome(_ sender: Any) {
         if let netbeansHome = selectNetBeansHome() {
             if isValidNetBeansHome(netbeansHome: netbeansHome) {
@@ -33,9 +37,19 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         }
     }
     @IBAction func startNetBeans(_ sender: Any) {
+        let netbeansJDKHome = textFieldNetBeansJDKHome.stringValue
+        if netbeansJDKHome.isEmpty {
+            alert(alertStyle: .critical, messageText: "Invalid JDK home directory!", informativeText: "Invalid JDK home directory!")
+            return
+        }
+        let netbeansHome = textFieldNetBeansHome.stringValue
+        if netbeansHome.isEmpty {
+            alert(alertStyle: .critical, messageText: "Invalid Apache NetBeans home directory!", informativeText: "Invalid Apache NetBeans home directory!")
+            return
+        }
         let userDefaults = UserDefaults.standard
-        userDefaults.set(textFieldNetBeansJDKHome.stringValue, forKey: "netbeans_jdkhome")
-        userDefaults.set(URL(fileURLWithPath: textFieldNetBeansHome.stringValue), forKey: "netbeans_home")
+        userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdkhome")
+        userDefaults.set(URL(fileURLWithPath: netbeansHome), forKey: "netbeans_home")
         if startNetBeans() {
             NSApplication.shared.terminate(self)
         } else {
@@ -51,10 +65,18 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         let userDefaults = UserDefaults.standard
-        let netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
-        textFieldNetBeansJDKHome.stringValue = netbeansJDKHome ?? "<not set>"
+        let environment = ProcessInfo.processInfo.environment
+        var netbeansJDKHome = environment["netbeans_jdkhome"]
+        var validNetbeansJDKHomeFromEnvironment = false
+        if isValidJDKHome(jdkHome: netbeansJDKHome) {
+             validNetbeansJDKHomeFromEnvironment = true
+        } else {
+            netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
+        }
+        textFieldNetBeansJDKHome.stringValue = netbeansJDKHome ?? ""
+        buttonBrowseForNetBeansJDKHome.isEnabled = !validNetbeansJDKHomeFromEnvironment
         let netbeansHome = userDefaults.url(forKey: "netbeans_home")
-        textFieldNetBeansHome.stringValue = netbeansHome?.path ?? "<not set>"
+        textFieldNetBeansHome.stringValue = netbeansHome?.path ?? ""
         window.setIsVisible(true)
     }
 
