@@ -36,6 +36,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             }
         }
     }
+    
     @IBAction func startNetBeans(_ sender: Any) {
         let netbeansJDKHome = textFieldNetBeansJDKHome.stringValue
         if netbeansJDKHome.isEmpty {
@@ -88,39 +89,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return true
     }
     
-    func getInstalledJDKHome(installedJDK: URL?) -> String? {
-        guard let installedJDK = installedJDK else {
-            return nil
-        }
-        let installedJDKHome = installedJDK
-            .appendingPathComponent("Contents")
-            .appendingPathComponent("Home")
-            .path
-        print("installed JDK home: \(installedJDKHome)")
-        let fileManager = FileManager.default
-        if (fileManager.fileExists(atPath: installedJDKHome)) {
-            return installedJDKHome
-        }
-        return nil
-    }
-    
-    func selectInstalledJDK() -> URL? {
-        let fileManager = FileManager.default
-        do {
-            let installedJDKs = try fileManager.contentsOfDirectory(
-                at: URL(fileURLWithPath: "/Library/Java/JavaVirtualMachines")
-                , includingPropertiesForKeys: nil
-                , options: .skipsHiddenFiles
-            )
-            print("installed JDKs: \(installedJDKs)")
-            // TODO
-            return installedJDKs[3]
-        } catch {
-            print("Unexpected error: \(error).")
-            return nil
-        }
-    }
-    
     func selectDirectory(title: String, initialDirectory: String?) -> URL? {
         let openPanel = NSOpenPanel()
         openPanel.allowsMultipleSelection = false
@@ -164,11 +132,16 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         return jdkHome.path
     }
     
-    func isValidNetBeansHome(netbeansHome: URL) -> Bool {
+    func generateNetBeansShellScriptPath(netbeansHome: URL) -> String {
         let netbeansShellScript = netbeansHome
             .appendingPathComponent("bin")
             .appendingPathComponent("netbeans")
             .path
+        return netbeansShellScript
+    }
+    
+    func isValidNetBeansHome(netbeansHome: URL) -> Bool {
+        let netbeansShellScript = generateNetBeansShellScriptPath(netbeansHome: netbeansHome)
         let fileManager = FileManager.default
         return fileManager.fileExists(atPath: netbeansShellScript)
     }
@@ -177,10 +150,7 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         guard let netbeansHome = netbeansHome else {
             return nil
         }
-        let netbeansShellScript = netbeansHome
-            .appendingPathComponent("bin")
-            .appendingPathComponent("netbeans")
-            .path
+        let netbeansShellScript = generateNetBeansShellScriptPath(netbeansHome: netbeansHome)
         let fileManager = FileManager.default
         if (fileManager.fileExists(atPath: netbeansShellScript)) {
             return netbeansShellScript
