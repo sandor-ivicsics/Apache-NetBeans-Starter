@@ -117,33 +117,30 @@
         <window title="Apache NetBeans Starter" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" visibleAtLaunch="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="480" height="360"/>
+            <rect key="contentRect" x="335" y="390" width="480" height="183"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="480" height="360"/>
+                <rect key="frame" x="0.0" y="0.0" width="480" height="179"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="z4a-Xd-bFL">
-                        <rect key="frame" x="20" y="318" width="440" height="22"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="z4a-Xd-bFL">
+                        <rect key="frame" x="20" y="137" width="440" height="22"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="1Po-Ts-25j">
                             <font key="font" usesAppearanceFont="YES"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <textField verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="V7C-uh-HkE">
-                        <rect key="frame" x="20" y="259" width="440" height="22"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <textField verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="V7C-uh-HkE">
+                        <rect key="frame" x="20" y="78" width="440" height="22"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" sendsActionOnEndEditing="YES" borderStyle="bezel" drawsBackground="YES" id="2YR-Am-nVG">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="0fh-Rb-J1N">
-                        <rect key="frame" x="127" y="223" width="228" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="0fh-Rb-J1N">
+                        <rect key="frame" x="126" y="42" width="228" height="32"/>
                         <buttonCell key="cell" type="push" title="Select Apache NetBeans home" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Kgf-Ew-KKe">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -152,9 +149,8 @@
                             <action selector="browseForNetBeansHome:" target="Voe-Tx-rLC" id="hgp-7l-wlN"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="LsO-WY-TXf">
-                        <rect key="frame" x="169" y="282" width="144" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="LsO-WY-TXf">
+                        <rect key="frame" x="168" y="101" width="144" height="32"/>
                         <buttonCell key="cell" type="push" title="Select JDK home" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="C61-0u-WqP">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -163,9 +159,8 @@
                             <action selector="browseForNetBeansJDKHome:" target="Voe-Tx-rLC" id="SS8-R5-tXJ"/>
                         </connections>
                     </button>
-                    <button verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="57K-aw-fW8">
-                        <rect key="frame" x="151" y="190" width="182" height="32"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    <button verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="57K-aw-fW8">
+                        <rect key="frame" x="149" y="13" width="182" height="32"/>
                         <buttonCell key="cell" type="push" title="Start Apache NetBeans" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="wB6-AM-Dcc">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
                             <font key="font" metaFont="system"/>
@@ -175,8 +170,26 @@
                         </connections>
                     </button>
                 </subviews>
+                <constraints>
+                    <constraint firstItem="57K-aw-fW8" firstAttribute="top" secondItem="0fh-Rb-J1N" secondAttribute="bottom" constant="8" id="0HH-64-L5J"/>
+                    <constraint firstItem="LsO-WY-TXf" firstAttribute="top" secondItem="z4a-Xd-bFL" secondAttribute="bottom" constant="8" id="3Sp-3L-yL8"/>
+                    <constraint firstAttribute="trailing" secondItem="0fh-Rb-J1N" secondAttribute="trailing" constant="132" id="7gh-aA-tm4"/>
+                    <constraint firstItem="0fh-Rb-J1N" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="132" id="7p9-p7-896"/>
+                    <constraint firstAttribute="bottom" secondItem="57K-aw-fW8" secondAttribute="bottom" constant="20" id="9En-a1-Q2R"/>
+                    <constraint firstItem="LsO-WY-TXf" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="174" id="HK1-Ih-ax6"/>
+                    <constraint firstAttribute="trailing" secondItem="V7C-uh-HkE" secondAttribute="trailing" constant="20" id="J8S-KS-s88"/>
+                    <constraint firstItem="z4a-Xd-bFL" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="KUf-yD-LDv"/>
+                    <constraint firstItem="z4a-Xd-bFL" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="20" id="Ylg-Li-CpH"/>
+                    <constraint firstItem="0fh-Rb-J1N" firstAttribute="top" secondItem="V7C-uh-HkE" secondAttribute="bottom" constant="8" id="g5O-mS-A08"/>
+                    <constraint firstItem="V7C-uh-HkE" firstAttribute="top" secondItem="LsO-WY-TXf" secondAttribute="bottom" constant="8" id="hoF-cJ-ccg"/>
+                    <constraint firstAttribute="trailing" secondItem="LsO-WY-TXf" secondAttribute="trailing" constant="174" id="hxz-lx-HA7"/>
+                    <constraint firstAttribute="trailing" secondItem="57K-aw-fW8" secondAttribute="trailing" constant="155" id="i2b-M5-xwj"/>
+                    <constraint firstItem="V7C-uh-HkE" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" id="iXm-xm-6zU"/>
+                    <constraint firstItem="57K-aw-fW8" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="155" id="jNo-i3-fbE"/>
+                    <constraint firstAttribute="trailing" secondItem="z4a-Xd-bFL" secondAttribute="trailing" constant="20" id="koX-oS-x7x"/>
+                </constraints>
             </view>
-            <point key="canvasLocation" x="141" y="278"/>
+            <point key="canvasLocation" x="141" y="189.5"/>
         </window>
     </objects>
 </document>
