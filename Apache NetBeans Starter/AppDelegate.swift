@@ -10,6 +10,10 @@ import Cocoa
 
 @NSApplicationMain
 class AppDelegate: NSObject, NSApplicationDelegate {
+    let userDefaults = UserDefaults.standard
+    let processInfo = ProcessInfo.processInfo
+    let fileManager = FileManager.default
+    var logFile = LogFile()
     
     @IBOutlet weak var window: NSWindow!
     @IBOutlet weak var textFieldNetBeansJDKHome: NSTextField!
@@ -48,7 +52,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             alert(alertStyle: .critical, messageText: "Invalid Apache NetBeans home directory!", informativeText: "Invalid Apache NetBeans home directory!")
             return
         }
-        let userDefaults = UserDefaults.standard
         userDefaults.set(netbeansJDKHome, forKey: "netbeans_jdkhome")
         userDefaults.set(URL(fileURLWithPath: netbeansHome), forKey: "netbeans_home")
         if startNetBeans() {
@@ -65,7 +68,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             NSApplication.shared.terminate(self)
             return
         }
-        let userDefaults = UserDefaults.standard
         let environment = ProcessInfo.processInfo.environment
         var netbeansJDKHome = environment["netbeans_jdkhome"]
         var validNetbeansJDKHomeFromEnvironment = false
@@ -114,7 +116,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             .appendingPathComponent("bin")
             .appendingPathComponent("javac")
             .path
-        let fileManager = FileManager.default
         return fileManager.fileExists(atPath: javac)
     }
     
@@ -142,7 +143,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     
     func isValidNetBeansHome(netbeansHome: URL) -> Bool {
         let netbeansShellScript = generateNetBeansShellScriptPath(netbeansHome: netbeansHome)
-        let fileManager = FileManager.default
         return fileManager.fileExists(atPath: netbeansShellScript)
     }
     
@@ -151,7 +151,6 @@ class AppDelegate: NSObject, NSApplicationDelegate {
             return nil
         }
         let netbeansShellScript = generateNetBeansShellScriptPath(netbeansHome: netbeansHome)
-        let fileManager = FileManager.default
         if (fileManager.fileExists(atPath: netbeansShellScript)) {
             return netbeansShellScript
         }
@@ -172,32 +171,36 @@ class AppDelegate: NSObject, NSApplicationDelegate {
     }
     
     func startNetBeans() -> Bool {
-        let userDefaults = UserDefaults.standard
-        var environment = ProcessInfo.processInfo.environment
+        var environment = processInfo.environment
         var netbeansJDKHome = environment["netbeans_jdkhome"]
         if isValidJDKHome(jdkHome: netbeansJDKHome) {
-            print("netbeansJDKHome from environment: \(environment["netbeans_jdkhome"] as Optional)")
+            print("netbeansJDKHome from environment: \(environment["netbeans_jdkhome"] as Optional)", to: &logFile)
         } else {
             netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
             if isValidJDKHome(jdkHome: netbeansJDKHome) {
-                let netbeansHome = userDefaults.url(forKey: "netbeans_home")
-                guard let netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome) else {
-                    return false
-                }
-                let process = Process()
-                process.environment = environment
-                guard let shell = environment["SHELL"] else {
-                    return false
-                }
-                process.executableURL = URL(fileURLWithPath: shell)
-                process.arguments = [netbeansShellScript]
-                do {
-                    try process.run()
-                    return true
-                } catch {
-                    print("Unexpected error: \(error).")
-                }
+                environment["netbeans_jdkhome"] = netbeansJDKHome
+            } else {
+                return false
             }
+            print("netbeansJDKHome from user defaults: \(environment["netbeans_jdkhome"] as Optional)", to: &logFile)
+        }
+        let netbeansHome = userDefaults.url(forKey: "netbeans_home")
+        guard let netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome) else {
+            print("failed to get netbeans shell script from \(netbeansHome as Optional)", to: &logFile)
+            return false
+        }
+        let process = Process()
+        process.environment = environment
+        print("process.environment: \(process.environment as Optional)", to: &logFile)
+        process.executableURL = URL(fileURLWithPath: environment["SHELL"] ?? "/bin/bash")
+        print("process.executableURL: \(process.executableURL as Optional)", to: &logFile)
+        process.arguments = [netbeansShellScript]
+        print("process.arguments: \(process.arguments as Optional)", to: &logFile)
+        do {
+            try process.run()
+            return true
+        } catch {
+            print("Unexpected error: \(error).", to: &logFile)
         }
         return false
     }
