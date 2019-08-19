@@ -2,7 +2,7 @@
 //  LogFile.swift
 //  Apache NetBeans Starter
 //
-//  Created by Ivicsics Sándor on 2019. 08. 10..
+//  Created by Sándor Ivicsics on 2019. 08. 10..
 //  Copyright © 2019. ACC-Assist Kft. All rights reserved.
 //
 

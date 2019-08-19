@@ -2,7 +2,7 @@
 //  AppDelegate.swift
 //  Apache NetBeans Starter
 //
-//  Created by Ivicsics Sándor on 2019. 07. 27..
+//  Created by Sándor Ivicsics on 2019. 07. 27..
 //  Copyright © 2019. ACC-Assist Kft. All rights reserved.
 //
 
