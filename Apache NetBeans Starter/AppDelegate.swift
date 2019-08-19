@@ -174,15 +174,15 @@ class AppDelegate: NSObject, NSApplicationDelegate {
         var environment = processInfo.environment
         var netbeansJDKHome = environment["netbeans_jdkhome"]
         if isValidJDKHome(jdkHome: netbeansJDKHome) {
-            print("netbeansJDKHome from environment: \(environment["netbeans_jdkhome"] as Optional)", to: &logFile)
+            print("valid JDK from environment", to: &logFile)
         } else {
             netbeansJDKHome = userDefaults.string(forKey: "netbeans_jdkhome")
             if isValidJDKHome(jdkHome: netbeansJDKHome) {
+                print("valid JDK from user defaults", to: &logFile)
                 environment["netbeans_jdkhome"] = netbeansJDKHome
             } else {
                 return false
             }
-            print("netbeansJDKHome from user defaults: \(environment["netbeans_jdkhome"] as Optional)", to: &logFile)
         }
         let netbeansHome = userDefaults.url(forKey: "netbeans_home")
         guard let netbeansShellScript = getNetBeansShellScript(netbeansHome: netbeansHome) else {
